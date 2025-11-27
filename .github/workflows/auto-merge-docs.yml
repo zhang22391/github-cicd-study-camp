@@ -1,0 +1,96 @@
+name: Auto-merge Docs PRs
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [ main ]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  maybe-automerge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get PR info
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            core.setOutput('author', pr.user.login);
+
+      - name: Skip if author is maintainer
+        id: maintainer-check
+        run: |
+          MAINTAINERS=("YOUR_ID" "H_ID")
+          author="${{ steps.pr.outputs.author }}"
+          echo "PR author: $author"
+
+          is_maintainer=false
+          for m in "${MAINTAINERS[@]}"; do
+            if [ "$author" = "$m" ]; then
+              is_maintainer=true
+              break
+            fi
+          done
+
+          if [ "$is_maintainer" = true ]; then
+            echo "author_is_maintainer=true" >> $GITHUB_OUTPUT
+          else
+            echo "author_is_maintainer=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fetch guard-main conclusion
+        uses: actions/github-script@v7
+        id: guard
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+
+            const checks = await github.rest.checks.listForRef({
+              owner,
+              repo,
+              ref: pr.head.sha
+            });
+
+            const guard = checks.data.check_runs.find(
+              c => c.name === 'Guard Main (docs-only, author-aware)'
+            );
+
+            if (!guard) {
+              core.setOutput('docs_only', 'false');
+              core.setOutput('pattern_ok', 'false');
+            } else {
+              core.setOutput('docs_only', 'true');
+              core.setOutput('pattern_ok', 'true');
+            }
+
+      - name: Enable auto-merge (squash)
+        if: >
+          steps.maintainer-check.outputs.author_is_maintainer == 'false' &&
+          steps.guard.outputs.docs_only == 'true' &&
+          steps.guard.outputs.pattern_ok == 'true'
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          merge-method: squash
+
+      - name: Comment result
+        if: >
+          steps.maintainer-check.outputs.author_is_maintainer == 'false' &&
+          steps.guard.outputs.docs_only == 'true' &&
+          steps.guard.outputs.pattern_ok == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: "✅ docs/** 内の許可された形式の .md 変更のみを検出しました。Auto-merge を有効化します。"
+            });
