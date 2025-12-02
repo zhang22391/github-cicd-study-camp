@@ -24,17 +24,32 @@ git push -u origin team-a
 各チームブランチ（例：team-a）
 ```bash
 team-a
-├─ teams/team-a/                # チーム内コード & デモ
+├─ teams/team-a/                # チーム内コード & デモとか
 │  ├─ ch03/ ...
 │  └─ ch04/ ...
 └─ .github/workflows/
-   └─ team-a-ci.yml             # チームA専用ワークフロー
+   └─ your-ci-name.yml             # チームA専用ワークフロー
 ```
+**注意**：
+1. Workflow ファイル名（例：`your-ci-name.yml`）は自由ですが、CIファイル内の`name: xxx`には必ずチーム名を含めてください。
+例：
+```
+name: my-ci-team-a
+```
+2. `.github/workflows/` 配下には「現在利用中（アクティブ）」の Workflow のみを置き、実行後に`teams/team-a/ch01`などの各チーム用フォルダへ移動してください。
+`.github/workflows/`に置いたままだと再び実行される可能性があるため。
+
+3. 一度実行された CI は、GitHub Actions の「All Workflows」に履歴として残ります。
+   - `.yml`ファイルを削除しても過去の実行履歴は削除できません（GitHub の仕様です）。
+   - 一覧に残っていても、ファイルが存在しなければ今後は実行されませんのでご安心ください。
+
 ```bash
 main
 ├─ README.md
 ├─ .github/
 │  └─ workflows/
+│     ├─ manual.yml              # 手動トリガーCIを流す練習用
+│     ├─ auto-merge-docs.yml     # .mdのみ自動マージ
 │     └─ guard-main.yml          # mainはdocs/**のみ許可
 └─ docs/
    ├─ 第01回_第2章_Actionsの基本/
