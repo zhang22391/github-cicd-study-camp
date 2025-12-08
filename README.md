@@ -3,45 +3,19 @@
 『GitHub CI/CD 実践ガイド』第2章〜第13章を対象に、全10回（各3時間）で **輪読＋モブプロ形式** の勉強会を行います。
 
 - 各回は  **主催者の説明 → チーム内交代音読 → モブプロでハンズオン** という流れで進行します。  
-- チームごとに独立したブランチ・環境で実習を行い、最後に **学習メモ (.md)** を `main` ブランチへまとめます。
+- チームごとに独立したブランチ・環境で実習を行い、最後に **teamブランチ** を `main` ブランチへまとめます。
 
 ---
 
 ### 🧭 基本ルール
 
-```bash
-# チームAの例
-git checkout team-a     # チーム用ブランチへ切り替え
-# コード修正・検証
-git add .
-git commit -m "Add: team-a work for chapter X"
-git push -u origin team-a
-```
-- 各チームは `team-a / team-b / team-c …` のように独立したブランチを使用します。
-- `main` には 学習メモ (.md)のみを反映し、コードは `team` ブランチに残します。
+- 各チームは `team-a / team-b / team-c …` のように独立したブランチを使用します。 
+- main では以下の制限を設けています： 
+  - .github/ 配下の修正は 主催者のみ許可
+  → 参加者の PR に .github/ の変更が含まれる場合、CI により拒否されます。 
+  - 参加者が編集できるのは docs/（学習メモ）と teams/（各チームのコード） のみです。
 
 ### 📁 リポジトリ構成イメージ
-- #### 各チームブランチ（例：team-a）
-```bash
-team-a
-├─ teams/team-a/                # チーム内コード & デモとか
-│  ├─ ch03/ ...
-│  └─ ch04/ ...
-└─ .github/workflows/
-   └─ your-ci-name.yml             # チームA専用ワークフロー
-```
-**注意**：
-1. Workflow ファイル名（例：`your-ci-name.yml`）は自由ですが、CIファイル内の`name: xxx`には必ずチーム名を含めてください。
-例：
-```
-name: my-ci-team-a
-```
-2. `.github/workflows/` 配下には「現在利用中（アクティブ）」の Workflow のみを置き、<br> 実行後に`teams/team-a/ch01`などの各チーム用フォルダへ移動してください。<br>
-`.github/workflows/`に置いたままだと再び実行される可能性があるため。
-
-3. 一度実行された CI は、GitHub Actions の「All Workflows」に履歴として残ります。
-   - `.yml`ファイルを削除しても過去の実行履歴は削除できません（GitHub の仕様です）。
-   - 一覧に残っていても、ファイルが存在しなければ今後は実行されませんのでご安心ください。
 
 - #### mainブランチ
 ```bash
@@ -50,20 +24,48 @@ main
 ├─ .github/
 │  └─ workflows/
 │     ├─ manual.yml              # 手動トリガーCIを流す練習用
-│     ├─ auto-merge-docs.yml     # .mdのみ自動マージ
-│     └─ guard-main.yml          # mainはdocs/**のみ許可
+│     └─ guard-main.yml          # mainはdocs/** & teams/** のみ許可
 └─ docs/
-   ├─ 第01回_第2章_Actionsの基本/
-   │  ├─ teamA_第01回.md
-   │  ├─ teamB_第01回.md
-   │  └─ teamC_第01回.md
-   ├─ 第02回_第3章_ワークフロー基礎/
-   │  ├─ teamA_第02回.md
+│   ├─ 第01回_第2章_Actionsの基本/
+│   │  ├─ team-a.md
+│   │  ├─ team-b.md
+│   │  └─ team-c.md
+│   ├─ 第02回_第3章_ワークフロー基礎/
+│   │  ├─ team-a.md
+│   │  └─ ...
+│   └─ ...
+└─ teams/
+   ├─ team-a
+   │  ├─ ch02/ ...
+   │  ├─ ch03/ ...
+   │  └─ ...
+   ├─ team-b
+   │  ├─ ch02/ ...
    │  └─ ...
    └─ ...
 ```
 
-**注意**：コードは各チームブランチにのみ残し、`main` ブランチには **学習メモ（.md）** のみをコミットします。
+- #### 各チームブランチ（例：team-a）
+```bash
+team-a
+├─ teams/team-a/                # チーム内コード & デモとか
+│  ├─ ch03/ ...
+│  └─ ch04/ ...
+└─ .github/workflows/
+   └─ your-ci-name.yml          # ワークフロー、実行が終わったら、teams/team-a/chXXへ移動
+```
+**注意**：
+1. Workflow ファイル名（例：`your-ci-name.yml`）は自由ですが、CIファイル内の`name: xxx`には必ずチーム名を含めてください。
+例：
+```yaml
+name: my-ci-name-team-a
+```
+2. `.github/workflows/` 配下には「現在利用中（アクティブ）」の Workflow のみを置き、<br> 実行後に`teams/team-a/ch01`などの各チーム用フォルダへ移動してください。<br>
+`.github/workflows/`に置いたままだと再び実行される可能性があるため。
+
+3. 一度実行された CI は、GitHub Actions の「All Workflows」に履歴として残ります。
+   - `.yml`ファイルを削除しても過去の実行履歴は削除できません（GitHub の仕様です）。
+   - 一覧に残っていても、ファイルが存在しなければ今後は実行されませんのでご安心ください。
 
 ### 🧱 各回の手順
 
@@ -75,8 +77,8 @@ main
    - `git checkout -b team-<番号(小文字)>`
    - `./github/workflows/` 以下にチーム用 workflow を作成、チームブランチへpush・検証
    - 毎章のコードは `docs/0x-章名/CODE.md` で参照可能
-   - 使用完了のコードは `teams/team-<番号>/chXX/` 以下に移動
-   - 毎回終了後に `docs/0x-章名/` 以下に学習メモを作成（`例：team-<番号(小文字)>.md`）
+   - 終了後はコードを `teams/team-<番号>/chXX/` に移動
+   - `docs/0x-章名/team-<番号(小文字)>.md` に学習メモを作成
    - 学習メモは以下の Template を参考にしてください
    - 学習メモ作成したら `main` ブランチへ PR
 
@@ -84,7 +86,7 @@ main
 
 5. 各チームごとに学習メモを作成
 
-6. `main` ブランチへ学習メモ（.md）のみ PR
+6. `main` ブランチへPR
 
 ### 🧩 学習メモTemplate
 
