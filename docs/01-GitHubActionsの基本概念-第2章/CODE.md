@@ -1,7 +1,5 @@
 ## Chapter 02: GitHub Actionsの基本概念
 
----
-
 ### 2.1 コード
 
 ```yaml

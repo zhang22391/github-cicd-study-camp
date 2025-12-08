@@ -72,6 +72,12 @@ main
 2. チーム内で交代しながら音読（輪読）
 
 3. モブプロ形式でハンズオン実施
+   - `git checkout -b team-<番号(小文字)>`
+   - `./github/workflows/` 以下にチーム用 workflow を作成、チームブランチへpush・検証
+   - 使ったコードは `teams/team-<番号>/chXX/` 以下に移動
+   - 毎回終了後に `docs/0x-章名/` 以下に学習メモを作成
+   - 学習メモは以下の Template を参考にしてください
+   - 学習メモ作成したら `main` ブランチへ PR
 
 4. 必要に応じて専用の[ GPT ](https://chatgpt.com/g/g-691dce579db881b8ad74c52b837a7427-cicd4ke-mian-qiang-hui-zhuan-yong-kasutamugpt)または Slack で質問
 
