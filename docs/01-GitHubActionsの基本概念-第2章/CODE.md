@@ -3,7 +3,7 @@
 ### 2.1 コード
 
 ```yaml
-name: Hello                       # ワークフロー名
+name: Hello team-x                # ワークフロー名
 on: push                          # イベント（プッシュ時に起動）
 jobs:                             # ジョブの定義
   hello:                          # ジョブID
@@ -16,7 +16,7 @@ jobs:                             # ジョブの定義
 ### 2.2 コード
 
 ```yaml
-name: Workflow error
+name: Workflow error team-x
 on: push
 jobs:
   run:
@@ -29,7 +29,7 @@ jobs:
 ### 2.3 コード
 
 ```yaml
-name: YAML error
+name: YAML error team-x
 on: push
 jobs:
   run:
@@ -53,7 +53,7 @@ jobs:
 ### 2.5 コード
 
 ```yaml
-name: Schedule
+name: Schedule team-x
 on:
   schedule:                # 定期実行イベント
     - cron: '*/15 * * * *' # 15分ごとに起動するcron式
