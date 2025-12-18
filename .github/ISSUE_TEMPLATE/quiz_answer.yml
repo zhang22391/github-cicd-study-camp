@@ -26,14 +26,7 @@ body:
       placeholder: |
         Q1: B
         Q2: C
-        Q3: A
-        Q4: A
-        Q5: A
-        Q6: A
-        Q7: A
-        Q8: A
-        Q9: A
-        Q10: A
+        Q3: A,D
     validations:
       required: true
 
