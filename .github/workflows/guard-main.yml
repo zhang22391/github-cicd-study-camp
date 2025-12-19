@@ -25,7 +25,7 @@ jobs:
             core.info(`PR author: ${author}`);
 
             // 👇 主催者（制限なしでOK）をここに列挙
-            const ALLOWED_AUTHORS = ["jyzhang9812"];
+            const ALLOWED_AUTHORS = ["jyzhang9812","hashizume21474"];
 
             // 主催者なら制限なし
             if (ALLOWED_AUTHORS.includes(author)) {
