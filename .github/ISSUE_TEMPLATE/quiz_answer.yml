@@ -1,6 +1,6 @@
 name: Chapter Quiz Answer
 description: 勉強会 各章の理解度チェック回答用
-title: "[Quiz][ChXX] @your-name"
+title: "[Quiz][ChXX]"
 labels: ["quiz"]
 body:
   - type: markdown
@@ -22,11 +22,11 @@ body:
     id: answers
     attributes:
       label: 回答
-      description: 選択肢（例：Q1:B, Q2:C, Q3:A,D）
+      description: 選択肢
       placeholder: |
-        Q1: B
-        Q2: C
-        Q3: A,D
+        1. B
+        2. C
+        3. A,D
     validations:
       required: true
 
