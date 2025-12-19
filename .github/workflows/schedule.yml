@@ -1,7 +1,8 @@
 name: Schedule
 on:
+  workflow_dispatch: {}    # 手動実行を許可
   schedule:                # 定期実行イベント
-    - cron: '*/1 * * * *'  # 1分ごとに起動
+    - cron: '*/5 * * * *'  # 5分ごとに起動(scheduleイベントの最小単位は5分)
 jobs:
   run:
     runs-on: ubuntu-latest
