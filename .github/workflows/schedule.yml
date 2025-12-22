@@ -5,6 +5,7 @@ on:
     - cron: '2-59/5 * * * *'  # 2分から59分までの範囲を、5分おきに実行する(scheduleイベントの最小単位は5分)
 jobs:
   run:
+    if: vars.ENABLE_SCHEDULE == 'true'
     runs-on: ubuntu-latest
     steps:
       - run: date
