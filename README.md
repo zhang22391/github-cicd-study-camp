@@ -2,18 +2,21 @@
 
 『GitHub CI/CD 実践ガイド』第2章〜第13章を対象に、全10回（各3時間）で **輪読＋モブプロ形式** の勉強会を行います。
 
-- 各回は  **主催者の説明 → チーム内交代音読 → モブプロでハンズオン** という流れで進行します。  
-- チームごとに独立したブランチ・環境で実習を行い、最後に **teamブランチ** を `main` ブランチへまとめます。
+- 各回は 主催者の説明 → チーム内交代音読 → モブプロでハンズオン という流れで進行します。  
+- チームごとに独立したブランチ・環境で実習を行います。
 
 ---
 
 ### 🧭 基本ルール
 
 - 各チームは `team-a / team-b / team-c …` のように独立したブランチを使用します。 
+- `.github/workflows/` 配下には「現在利用中（アクティブ）」の Workflow のみを置き、<br>
+    実行後に`第0x回/team-x/`などの各チーム用フォルダへ移動してください。<br>
+    今回は、Helloワークフローがpushのたびに実行されるので、役割を終えたらフォルダ移動or削除してください。
+- **ワークフロー名の後にチーム名いれること忘れずに** ‼️
 - main では以下の制限を設けています： 
-  - .github/ 配下の修正は 主催者のみ許可
-  → 参加者の PR に .github/ の変更が含まれる場合、CI により拒否されます。 
-  - 参加者が編集できるのは docs/（学習メモ）と teams/（各チームのコード） のみです。
+  - **main ブランチの修正は 主催者のみ許可**
+  → 参加者の PR に 必ず 主催者がレビュー・マージを行います。
 
 ### 📁 リポジトリ構成イメージ
 
@@ -24,43 +27,39 @@ main
 ├─ .github/
 │  └─ workflows/
 │     ├─ manual.yml              # 手動トリガーCIを流す練習用
-│     └─ guard-main.yml          # mainはdocs/** & teams/** のみ許可
-└─ docs/
-│   ├─ 第01回_第2章_Actionsの基本/
-│   │  ├─ team-a.md
-│   │  ├─ team-b.md
-│   │  └─ team-c.md
-│   ├─ 第02回_第3章_ワークフロー基礎/
-│   │  ├─ team-a.md
-│   │  └─ ...
-│   └─ ...
-└─ teams/
-   ├─ team-a
-   │  ├─ ch02/ ...
-   │  ├─ ch03/ ...
-   │  └─ ...
-   ├─ team-b
-   │  ├─ ch02/ ...
-   │  └─ ...
-   └─ ...
+│     └─ schedule.md             # Cron CIを流す練習用
+├─ 第01回_第2章_Actionsの基本/
+│  ├─ team-a/your-ci-name-a.yml
+│  ├─ team-b/your-ci-name-b.yml
+│  └─ team-c/your-ci-name-c.yml
+├─ 第02回_第3章_ワークフロー基礎/
+│  ├─ team-a/your-ci-name-a.yml
+│  └─ ...
+└─ ...
 ```
 
 - #### 各チームブランチ（例：team-a）
 ```bash
 team-a
-├─ teams/team-a/                # チーム内コード & デモとか
-│  ├─ ch03/ ...
-│  └─ ch04/ ...
-└─ .github/workflows/
-   └─ your-ci-name.yml          # ワークフロー、実行が終わったら、teams/team-a/chXXへ移動
+├─ README.md
+├─ .github/
+│  └─ workflows/
+│     ├─ manual.yml              # 手動トリガーCIを流す練習用
+│     └─ schedule.md             # Cron CIを流す練習用
+│     └─ your-ci-name-a.yml      # ワークフロー、実行が終わったら、第0x回/team-x/へ移動
+├─ 第01回_第2章_Actionsの基本/
+│  └─ team-a/...
+├─ 第02回_第3章_ワークフロー基礎/
+│  └─ team-a/...
+└─ ...
 ```
 **注意**：
-1. Workflow ファイル名（例：`your-ci-name.yml`）は自由ですが、CIファイル内の`name: xxx`には必ずチーム名を含めてください。
+1. Workflow ファイル名（例：`your-ci-name.yml`）は自由ですが、**CIファイル内の`name: xxx`には必ずチーム名を含めて**ください ‼️
 例：
 ```yaml
 name: my-ci-name-team-a
 ```
-2. `.github/workflows/` 配下には「現在利用中（アクティブ）」の Workflow のみを置き、<br> 実行後に`teams/team-a/ch01`などの各チーム用フォルダへ移動してください。<br>
+2. `.github/workflows/` 配下には「現在利用中（アクティブ）」の Workflow のみを置き、<br> 実行後に`第0x回/team-x/`などの各チーム用フォルダへ移動してください。<br>
 `.github/workflows/`に置いたままだと再び実行される可能性があるため。
 
 3. 一度実行された CI は、GitHub Actions の「All Workflows」に履歴として残ります。
@@ -69,55 +68,18 @@ name: my-ci-name-team-a
 
 ### 🧱 各回の手順
 
-1. 主催者が当日の章と目的を説明 (5~10min)
+1. 主催者が当日の章と目的を説明＆前回Quizの振り返り (5~10min)
 
 2. チーム内で交代しながら音読（輪読）
 
 3. モブプロ形式でハンズオン実施
    - `git checkout -b team-<番号(小文字)>`
    - `./github/workflows/` 以下にチーム用 workflow を作成、チームブランチへpush・検証
-   - 毎章のコードは `docs/0x-章名/CODE.md` で参照可能
-   - 終了後はコードを `teams/team-<番号>/chXX/` に移動
-   - `docs/0x-章名/team-<番号(小文字)>.md` に学習メモを作成
-   - 学習メモは以下の Template を参考にしてください
-   - 学習メモ作成したら `main` ブランチへ PR
+   - 毎章のコードは [ こちら ](https://github.com/tmknom/example-github-cicd?tab=readme-ov-file) で参照可能
+   - **終了後はコードを `章節名/team-<番号>/` に移動**
+   - 毎回学習完了したら、Quizを実行して理解度チェック
 
 4. 必要に応じて専用の[ GPT ](https://chatgpt.com/g/g-691dce579db881b8ad74c52b837a7427-cicd4ke-mian-qiang-hui-zhuan-yong-kasutamugpt)または Slack で質問
-
-5. 各チームごとに学習メモを作成
-
-6. `main` ブランチへPR
-
-### 🧩 学習メモTemplate
-
-- **パス**：`docs/03-継続的インテグレーションの実践(第4章)/`
-- **ファイル名**：`team-a.md`
-```markdown
-# 3-継続的インテグレーションの実践(第4章)- Team A
-
-## 学んだこと
-- GitHub Actionsのworkflow設計方法
-- キャッシュとartifactの使い方
-- CIの再利用と権限管理
-
-## 実施内容（モブプロ）
-- pushトリガーでテスト自動実行
-- Slack通知の設定
-- 実際にworkflowを編集・検証
-
-## 質問・課題
-- matrix設定の最適化方法
-- キャッシュキーのベストプラクティス
-- Secretsの共有管理について
-
-## 補足・Tips
-- `${{ github.ref_name }}` の利用が便利
-- jobの並列実行は `needs:` で制御可能
-
-## Feedback
-- GPTを使った質問が便利だった
-- モブプロ中の交代タイミングをもう少し短くしてもよさそう
-```
 
 ### ⚠️ チーム間での衝突リスクと解決方案 (chapter7〜13)
 
