@@ -1,0 +1,45 @@
+name: Chapter Quiz Answer
+description: 勉強会 各章の理解度チェック回答用
+title: "[Quiz][ChXX]"
+labels: ["quiz"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        📘 GitHub CI/CD 勉強会 理解度チェック  
+        ※ 他の人の Issue を見る前に、まず自分で回答してください。
+
+  - type: input
+    id: chapter
+    attributes:
+      label: 対象章
+      description: 例）Ch02 / Ch03 / Ch04
+      placeholder: Ch02
+    validations:
+      required: true
+
+  - type: textarea
+    id: answers
+    attributes:
+      label: 回答
+      description: 選択肢
+      placeholder: |
+        1. B
+        2. C
+        3. A,D
+    validations:
+      required: true
+
+  - type: textarea
+    id: unsure
+    attributes:
+      label: 自信がない問題
+      description: 迷った設問や理由
+      placeholder: |
+        Q5: Job と Step の違いが少し曖昧でした
+
+  - type: textarea
+    id: feedback
+    attributes:
+      label: フィードバック
+      description: 難しかった点 / わかりにくかった点
